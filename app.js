@@ -1,9 +1,10 @@
 'use strict';
 
 var arrProducts = [];
-var TotalClickCounter = 0;
+var totalClickCounter = 0;
+var threeRandomNumbers = [];
 
-function Products(productName, imgLocation) {  //Function constructor for each of my products
+function Products(productName, imgLocation) { //Function constructor for each of my products
   this.productName = productName; //name or type of product
   this.imgLocation = imgLocation; //Where the image is stored locally
   this.timesShown = 0; // how many times has this image been shown already
@@ -43,16 +44,52 @@ function rng(min, max) { //helper function to find a random number
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-function findRandomPicture() { // function will assign 3 values to the 3 frames
-  for (var i = 0; i < allFrames.length; i++) {
-    allFrames[i] = rng(0, arrProducts.length);
+function checkForDupeNumber(numberOne, numberTwo, numberThree) { //function to find three unique photos
+  if (numberOne === numberTwo || numberOne === numberThree || numberTwo === numberThree) {
+    findThreeUniqueRandomNumbers();
   }
-  console.log(allFrames);
+  return;
+}
+
+function findThreeUniqueRandomNumbers() { // function will assign 3 values to the 3 frames
+  for (var i = 0; i < allFrames.length; i++){
+    threeRandomNumbers[i] = rng(0, arrProducts.length);
+  }
+  console.log('just built this', threeRandomNumbers);
+  checkForDupeNumber(threeRandomNumbers[0], threeRandomNumbers[1], threeRandomNumbers[2]);
+  return threeRandomNumbers;
+}
+
+
+
+function displayThreeRandomPhotos() {
+  for (var i = 0; i < allFrames.length; i++) {
+    allFrames[i].src = arrProducts[threeRandomNumbers[i]].imgLocation;
+  }
   return allFrames;
 }
 
-function checkForDupePhoto() { //function to find three unique photos
-  for (var i = 0; i < allFrames.length; i++) {
-
+function imgClicked(frameClicked) {
+  totalClickCounter ++;
+  if (totalClickCounter < 26) {
+    arrProducts[threeRandomNumbers[frameClicked]].amountClicked ++;
+    console.log(arrProducts[threeRandomNumbers[frameClicked]].amountClicked, 'should increment amount of clicks');
+    assignPhotoToFrame();
   }
+  insertDataIntoChart();
+  loadChart();
 }
+
+
+findThreeUniqueRandomNumbers();
+displayThreeRandomPhotos();
+
+frameOne.addEventListener('click', function() {
+  imgClicked(0);
+});
+frameTwo.addEventListener('click', function() {
+  imgClicked(1);
+});
+frameThree.addEventListener('click', function() {
+  imgClicked(2);
+});
