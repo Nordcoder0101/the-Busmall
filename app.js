@@ -11,6 +11,7 @@ function Products(productName, imgLocation) {  //Function constructor for each o
   arrProducts.push(this); // push this object(Product) into an array of my arrProducts
 }
 
+//instantiating my objects
 var bag = new Products('bag', 'assets/bag.jpg');
 var banana = new Products('banana', 'assets/banana.jpg');
 var bathroom = new Products('bathroom fixture', 'assets/bathroom.jpg');
