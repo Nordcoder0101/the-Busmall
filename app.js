@@ -1,9 +1,11 @@
 'use strict';
 
 var arrProducts = [];
-var TotalClickCounter = 0;
+var totalClickCounter = 0;
+var threeRandomNumbers = [];
+var myChart = null;
 
-function Products(productName, imgLocation) {  //Function constructor for each of my products
+function Products(productName, imgLocation) { //Function constructor for each of my products
   this.productName = productName; //name or type of product
   this.imgLocation = imgLocation; //Where the image is stored locally
   this.timesShown = 0; // how many times has this image been shown already
@@ -43,16 +45,99 @@ function rng(min, max) { //helper function to find a random number
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-function findRandomPicture() { // function will assign 3 values to the 3 frames
-  for (var i = 0; i < allFrames.length; i++) {
-    allFrames[i] = rng(0, arrProducts.length);
+function checkForDupeNumber(numberOne, numberTwo, numberThree) { //function to find three unique photos
+  if (numberOne === numberTwo || numberOne === numberThree || numberTwo === numberThree) {
+    findThreeUniqueRandomNumbers();
   }
-  console.log(allFrames);
+  return;
+}
+
+function findThreeUniqueRandomNumbers() { // function will assign 3 values to the 3 frames
+  for (var i = 0; i < allFrames.length; i++){
+    threeRandomNumbers[i] = rng(0, arrProducts.length);
+  }
+  checkForDupeNumber(threeRandomNumbers[0], threeRandomNumbers[1], threeRandomNumbers[2]);
+  return threeRandomNumbers;
+}
+
+
+
+function displayThreeRandomPhotos() {
+  for (var i = 0; i < allFrames.length; i++) {
+    allFrames[i].src = arrProducts[threeRandomNumbers[i]].imgLocation;
+  }
   return allFrames;
 }
 
-function checkForDupePhoto() { //function to find three unique photos
-  for (var i = 0; i < allFrames.length; i++) {
-
+function imgClicked(frameClicked) {
+  totalClickCounter ++;
+  if (totalClickCounter <= 25) {
+    arrProducts[threeRandomNumbers[frameClicked]].timesClicked ++;
+    findThreeUniqueRandomNumbers();
+    displayThreeRandomPhotos();
+    if (totalClickCounter >= 25) {
+      showButton();
+    }
   }
 }
+
+function showButton(){
+  var button = document.createElement('button');
+  button.innerHTML = 'See data';
+  var addButton = document.getElementById('add_button');
+  addButton.appendChild(button);
+  button.addEventListener('click', displayList);
+}
+function displayList(){
+  var chr = document.getElementById('chart');
+  chr.style.visibility = 'visible';
+  myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: allProducts.map(function(x) {return x.productName;}),
+      datasets: [{
+        label: '# of Votes',
+        data: allProducts.map(function(x) {return x.timesClicked;}),
+
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero:true,
+            max: 10,
+            min: 0,
+            stepSize: 1,
+          }
+        }]
+      }
+    }
+  });
+}
+  // var getDiv = document.getElementById('list_of_results');
+  // for (var i = 0; i < arrProducts.length; i++) {
+  //   var makeUl = document.createElement('ul');
+  //   makeUl.innerHTML = arrProducts[i].productName;
+  //   getDiv.appendChild(makeUl);
+  //   var makeLi = document.createElement('li');
+  //   makeLi.innerHTML = 'Was chosen ' + arrProducts[i].timesClicked + ' times.';
+  //   makeUl.appendChild(makeLi);
+  // }
+
+
+var ctx = document.getElementById('my_chart').getContext('2d');
+findThreeUniqueRandomNumbers();
+displayThreeRandomPhotos();
+
+
+frameOne.addEventListener('click', function() {
+  imgClicked(0);
+});
+frameTwo.addEventListener('click', function() {
+  imgClicked(1);
+});
+frameThree.addEventListener('click', function() {
+  imgClicked(2);
+});
